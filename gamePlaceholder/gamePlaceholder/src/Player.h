@@ -26,16 +26,14 @@ private:
 
 	PlayerStateMachine state;
 
-	PlayerData& outLoc;
-
 public:
-	Player(PlayerData& out);
+	Player();
 	~Player();
 
 	void Init(glm::vec2 pos, int ori);
 
 	void PlayerAction(PlayerStateEnum inputAction);
-	void GameAdvance();
+	PlayerData GameAdvance();
 	void moveConnect();
 
 	void ChangePos(glm::vec2 pos);

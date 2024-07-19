@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(PlayerData& out) : outLoc(out) {
+Player::Player() {
 
 }
 
@@ -21,7 +21,7 @@ void Player::PlayerAction(PlayerStateEnum inputAction) {
 	state.Action(inputAction);
 }
 
-void Player::GameAdvance() {
+PlayerData Player::GameAdvance() {
 	//TODO: return PlayerData
 	if (state.IsNewMove()) {
 		moveConnected = false;
@@ -42,21 +42,23 @@ void Player::GameAdvance() {
 	else {
 		position += movement;
 	}
-	outLoc.pos = position;
-	outLoc.state = state.GetState();
-	outLoc.hurtBox = state.GetMove().hurtbox;
-	outLoc.hitBox = state.GetMove().hitbox;
+	PlayerData ret;
+	ret.pos = position;
+	ret.state = state.GetState();
+	ret.hurtBox = state.GetMove().hurtbox;
+	ret.hitBox = state.GetMove().hitbox;
 	if (orientation == -1) {
-		outLoc.hurtBox = FlipRectangle(outLoc.hurtBox);
-		outLoc.hitBox = FlipRectangle(outLoc.hitBox);
+		ret.hurtBox = FlipRectangle(ret.hurtBox);
+		ret.hitBox = FlipRectangle(ret.hitBox);
 	}
-	outLoc.hurtBox.lowerLeft += position;
-	outLoc.hurtBox.upperRight += position;
-	outLoc.hitBox.lowerLeft += position;
-	outLoc.hitBox.upperRight += position;
-	outLoc.damage = state.GetDamage();
-	outLoc.hitStun = state.GetHitStun();
-	outLoc.moveConnected = moveConnected;
+	ret.hurtBox.lowerLeft += position;
+	ret.hurtBox.upperRight += position;
+	ret.hitBox.lowerLeft += position;
+	ret.hitBox.upperRight += position;
+	ret.damage = state.GetDamage();
+	ret.hitStun = state.GetHitStun();
+	ret.moveConnected = moveConnected;
+	return ret;
 }
 
 void Player::moveConnect() {

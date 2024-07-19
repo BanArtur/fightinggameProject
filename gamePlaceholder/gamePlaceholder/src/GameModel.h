@@ -5,9 +5,9 @@
 class GameModel {
 private:
 	//TODO: put two player object into one vector
-	Player* player1;
+	Player player1;
 
-	Player* player2;
+	Player player2;
 
 	PlayerData p1Data;
 	PlayerData p2Data;

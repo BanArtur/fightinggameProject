@@ -276,8 +276,6 @@ int main(void)
 
             elapsedTimeBuffer = fmod(elapsedTimeBuffer,frameLength);
 
-            //std::cout << physicsFrames << std::endl;
-
             inputHandler.CheckButtons();
             std::pair<PlayerStateEnum, PlayerStateEnum> playeractions = inputHandler.GetPlayerActions();
 
