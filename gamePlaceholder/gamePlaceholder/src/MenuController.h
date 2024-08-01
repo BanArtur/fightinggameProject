@@ -1,24 +1,44 @@
 #pragma once
 #include <iostream>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "Shader.h"
 #include "Renderer.h"
+#include "RenderableObject.h"
+#include "Texture.h"
+
+#include "AppEnums.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
 
-enum MenuState { Main, Settings };
-
 class MenuController {
 private:
+	ApplicationState& state;
 	MenuState menuState;
 	Shader& shader;
 	Renderer& renderer;
 
+	GLFWwindow* window;
+
+	glm::mat4 menuProj;
+	glm::mat4 menuView;
+
+	RenderableObject* MenuBackground;
+	Texture textureMenuBackground;
+
+	bool& showHitboxes;
 public:
-	MenuController(Shader& sh, Renderer& rend);
+	MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb);
 	~MenuController();
 
-	void Render(int windowWidth, int windowHeight);
+	void Init();
+
+	void Render();
 };

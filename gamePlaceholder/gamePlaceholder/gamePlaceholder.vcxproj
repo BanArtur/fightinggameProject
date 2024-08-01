@@ -180,6 +180,7 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AppEnums.h" />
     <ClInclude Include="src\GameController.h" />
     <ClInclude Include="src\GameModel.h" />
     <ClInclude Include="src\Geo.h" />

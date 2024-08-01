@@ -1,29 +1,55 @@
 #include "MenuController.h"
 
-MenuController::MenuController(Shader& sh, Renderer& rend) : shader(sh), renderer(rend){
-    menuState = MenuState::Main;
+MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb) {
+    menuProj = glm::ortho(0.0f, 150.0f, 0.0f, 100.0f, -1.0f, 1.0f);
+    menuView = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+
+    float menuBackgroundPositions[] = {
+            0.0f,   0.0f,   0.0f, 0.0f,
+            150.0f, 0.0f,   1.0f, 0.0f,
+            150.0f, 100.0f, 1.0f, 1.0f,
+            0.0f,   100.0f, 0.0f, 1.0f,
+    };
+
+    unsigned int menuBackgroundIndices[] = {
+        0,1,2,
+        2,3,0,
+    };
+
+    MenuBackground = RenderableObject::MakeObject2D(menuBackgroundPositions, 4 * 4 * sizeof(float), menuBackgroundIndices, 6, shader);
+    Init();
 }
 
 MenuController::~MenuController() {
+    delete MenuBackground;
 }
-/*
-void MenuController::Render(int windowWidth, int windowHeight) {
+
+void MenuController::Init() {
+    menuState = MenuState::Main;
+}
+
+void MenuController::Render() {
+    glm::mat4 menuModel = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+    glm::mat4 menuMVP = menuProj * menuView * menuModel;
+
     shader.Bind();
     shader.SetUniformMat4f("u_MVP", menuMVP);
     textureMenuBackground.Bind(0);
     shader.SetUniform1i("u_Texture", 0);
 
-    renderer.Draw(vaMenuBackground, ibMenuBackground, shader);
+    renderer.Draw(MenuBackground->vertexArray, MenuBackground->indexBuffer, MenuBackground->relatedShader);
 
     switch (menuState)
     {
     case Main:
     {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
         ImVec2 size, pos, buttonSize;
         size.x = 120;
         size.y = 200;
-        pos.x = floor(windowWidth / 2) - floor(size.x / 2);
-        pos.y = floor(3 * windowHeight / 4) - floor(size.y / 2);
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
         buttonSize.x = 100;
         buttonSize.y = 50;
         ImGuiWindowFlags window_flags = 0;
@@ -50,11 +76,13 @@ void MenuController::Render(int windowWidth, int windowHeight) {
     break;
     case Settings:
     {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
         ImVec2 size, pos, buttonSize;
         size.x = 140;
         size.y = 200;
-        pos.x = floor(windowWidth / 2) - floor(size.x / 2);
-        pos.y = floor(3 * windowHeight / 4) - floor(size.y / 2);
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
         buttonSize.x = 120;
         buttonSize.y = 50;
         ImGuiWindowFlags window_flags = 0;
@@ -76,4 +104,4 @@ void MenuController::Render(int windowWidth, int windowHeight) {
     default:
         break;
     }
-}*/
+}

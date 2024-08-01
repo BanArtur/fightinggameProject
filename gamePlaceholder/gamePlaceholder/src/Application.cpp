@@ -20,6 +20,10 @@
 #include "InputHandler.h"
 #include "TextureHandler.h"
 
+#include "AppEnums.h"
+
+#include "MenuController.h"
+#include "GameController.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -28,11 +32,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
 
-enum ApplicationState{StartUp, MenuStart, MenuOngoing, GameStart, GameOngoing, GameEnd};
-enum MenuState{Main, Settings};
-
 ApplicationState state = ApplicationState::StartUp;
-MenuState menuState = MenuState::Main;
 
 static float AnimationStripHeight = 128.0f;
 static float AnimationStripLength = 1280.0f;
@@ -84,28 +84,8 @@ int main(void)
         GLCall(glEnable(GL_BLEND));
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-        //TODO: Function for OpenGL definitions
-
         Shader shader("res/shaders/Basic.Shader");
         shader.Bind();
-
-        float menuBackgroundPositions[] = {
-            0.0f,   0.0f,   0.0f, 0.0f,
-            150.0f, 0.0f,   1.0f, 0.0f,
-            150.0f, 100.0f, 1.0f, 1.0f,
-            0.0f,   100.0f, 0.0f, 1.0f,
-        };
-
-        unsigned int menuBackgroundIndices[] = {
-            0,1,2,
-            2,3,0,
-        };
-
-        RenderableObject *MenuBackground = RenderableObject::MakeObject2D(menuBackgroundPositions, 4 * 4 * sizeof(float), menuBackgroundIndices, 6, shader);
-
-        glm::mat4 menuProj = glm::ortho(0.0f, 150.0f, 0.0f, 100.0f, -1.0f, 1.0f);
-        glm::mat4 menuView = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-
 
         Texture textureMenuBackground("res/textures/background.png");
         textureMenuBackground.Bind(0);
@@ -197,6 +177,8 @@ int main(void)
 
         int gameEndFrames = 0;
 
+        MenuController menuController(shader, renderer, window, state, showHitboxes);
+
         GameModel gameModel;
 
         InputHandler inputHandler;
@@ -222,10 +204,6 @@ int main(void)
 
             inputHandler.CheckButtons();
             std::pair<PlayerStateEnum, PlayerStateEnum> playeractions = inputHandler.GetPlayerActions();
-
-            glm::mat4 menuModel = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-            glm::mat4 menuMVP = menuProj * menuView * menuModel;
-
 
             glm::mat4 gameBackgroundModel = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
             glm::mat4 gameBackgroundMVP;
@@ -253,82 +231,11 @@ int main(void)
                 state = ApplicationState::MenuStart;
                 break;
             case MenuStart:
-                menuState = MenuState::Main;
                 state = ApplicationState::MenuOngoing;
+                menuController.Init();
                 break;
             case MenuOngoing:
-                shader.Bind();
-                shader.SetUniformMat4f("u_MVP", menuMVP);
-                textureMenuBackground.Bind(0);
-                shader.SetUniform1i("u_Texture", 0);
-
-                renderer.Draw(MenuBackground->vertexArray, MenuBackground->indexBuffer, MenuBackground->relatedShader);
-
-                switch (menuState)
-                {
-                case Main:
-                    {
-                        int width, height;
-                        glfwGetWindowSize(window, &width, &height);
-                        ImVec2 size, pos, buttonSize;
-                        size.x = 120;
-                        size.y = 200;
-                        pos.x = floor(width / 2) - floor(size.x / 2);
-                        pos.y = floor(3 * height / 4) - floor(size.y / 2);
-                        buttonSize.x = 100;
-                        buttonSize.y = 50;
-                        ImGuiWindowFlags window_flags = 0;
-                        window_flags |= ImGuiWindowFlags_NoBackground;
-                        window_flags |= ImGuiWindowFlags_NoTitleBar;
-                        window_flags |= ImGuiWindowFlags_NoResize;
-                        ImGui::SetNextWindowSize(size);
-                        ImGui::SetNextWindowPos(pos);
-                        bool open = true;
-
-                        ImGui::Begin("Menu", &open, window_flags);
-                        if (ImGui::Button("Local Game", buttonSize)) {
-                            state = ApplicationState::GameStart;
-                        }
-                        if (ImGui::Button("Settings", buttonSize)) {
-                            menuState = MenuState::Settings;
-                            std::cout << "Settings clicked" << std::endl;
-                        }
-                        if (ImGui::Button("Exit", buttonSize)) {
-                            glfwSetWindowShouldClose(window, 1);
-                        }
-                        ImGui::End();
-                    }
-                    break;
-                case Settings:
-                    {
-                        int width, height;
-                        glfwGetWindowSize(window, &width, &height);
-                        ImVec2 size, pos, buttonSize;
-                        size.x = 140;
-                        size.y = 200;
-                        pos.x = floor(width / 2) - floor(size.x / 2);
-                        pos.y = floor(3 * height / 4) - floor(size.y / 2);
-                        buttonSize.x = 120;
-                        buttonSize.y = 50;
-                        ImGuiWindowFlags window_flags = 0;
-                        window_flags |= ImGuiWindowFlags_NoBackground;
-                        window_flags |= ImGuiWindowFlags_NoTitleBar;
-                        window_flags |= ImGuiWindowFlags_NoResize;
-                        ImGui::SetNextWindowSize(size);
-                        ImGui::SetNextWindowPos(pos);
-                        bool open = true;
-
-                        ImGui::Begin("Settings", &open, window_flags);
-                        ImGui::Checkbox("Show hit- and\nhurtboxes", &showHitboxes);
-                        if (ImGui::Button("Back to\nmain menu", buttonSize)) {
-                            menuState = MenuState::Main;
-                        }
-                        ImGui::End();
-                    }
-                    break;
-                default:
-                    break;
-                }
+                menuController.Render();
                 break;
             case GameStart:
                 state = ApplicationState::GameOngoing;
@@ -560,7 +467,6 @@ int main(void)
             glfwPollEvents();
         }
         delete GameBackground;
-        delete MenuBackground;
         delete Box;
         delete Player;
 
