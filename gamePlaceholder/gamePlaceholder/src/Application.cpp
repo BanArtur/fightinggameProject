@@ -15,6 +15,7 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "RenderableObject.h"
 #include "GameModel.h"
 #include "InputHandler.h"
 #include "TextureHandler.h"
@@ -35,22 +36,6 @@ MenuState menuState = MenuState::Main;
 
 static float AnimationStripHeight = 128.0f;
 static float AnimationStripLength = 1280.0f;
-
-/*
-bool MenuKeyDownCheck()
-{
-    ImGuiIO& io = ImGui::GetIO();
-    if (ImGui::IsKeyDown(ImGuiKey_M)) {
-        state = ApplicationState::MenuStart;
-        std::cout << "M pressed" << std::endl;
-        return true;
-    }
-    else if (ImGui::IsKeyDown(ImGuiKey_G)) {
-        state = ApplicationState::GameStart;
-        std::cout << "G pressed" << std::endl;
-    }
-    return false;
-}*/
 
 int main(void)
 {
@@ -101,6 +86,9 @@ int main(void)
 
         //TODO: Function for OpenGL definitions
 
+        Shader shader("res/shaders/Basic.Shader");
+        shader.Bind();
+
         float menuBackgroundPositions[] = {
             0.0f,   0.0f,   0.0f, 0.0f,
             150.0f, 0.0f,   1.0f, 0.0f,
@@ -113,30 +101,15 @@ int main(void)
             2,3,0,
         };
 
-        VertexArray vaMenuBackground;
-        VertexBuffer vbMenuBackground(menuBackgroundPositions, 4*4*sizeof(float));
-
-        VertexBufferLayout layoutMenuBackground;
-        layoutMenuBackground.Push<float>(2);
-        layoutMenuBackground.Push<float>(2);
-        vaMenuBackground.AddBuffer(vbMenuBackground, layoutMenuBackground);
-
-        IndexBuffer ibMenuBackground(menuBackgroundIndices, 6);
+        RenderableObject *MenuBackground = RenderableObject::MakeObject2D(menuBackgroundPositions, 4 * 4 * sizeof(float), menuBackgroundIndices, 6, shader);
 
         glm::mat4 menuProj = glm::ortho(0.0f, 150.0f, 0.0f, 100.0f, -1.0f, 1.0f);
         glm::mat4 menuView = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
-        Shader shader("res/shaders/Basic.Shader");
-        shader.Bind();
 
         Texture textureMenuBackground("res/textures/background.png");
         textureMenuBackground.Bind(0);
         shader.SetUniform1i("u_Texture", 0);
-
-        vaMenuBackground.Unbind();
-        vbMenuBackground.Unbind();
-        ibMenuBackground.Unbind();
-        
 
         float gameBackgroundPositions[] = {
             0.0f,   0.0f,   0.0f, 0.0f,
@@ -150,16 +123,7 @@ int main(void)
             2,3,0,
         };
 
-        VertexArray vaGameBackground;
-        VertexBuffer vbGameBackground(gameBackgroundPositions, 4*4*sizeof(float));
-
-        VertexBufferLayout layoutGameBackground;
-        layoutGameBackground.Push<float>(2);
-        layoutGameBackground.Push<float>(2);
-        vaGameBackground.AddBuffer(vbGameBackground, layoutGameBackground);
-
-        IndexBuffer ibGameBackground(gameBackgroundIndices,6);
-
+        RenderableObject *GameBackground = RenderableObject::MakeObject2D(gameBackgroundPositions, 4 * 4 * sizeof(float), gameBackgroundIndices, 6, shader);
 
         glm::mat4 gameProj = glm::ortho(0.0f , 300.f, 0.0f , 300.0f * 540.0f / 960.0f);
         glm::mat4 gameView = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 25.0f, 0));
@@ -180,15 +144,7 @@ int main(void)
             2,3,0,
         };
 
-        VertexArray vaBox;
-        VertexBuffer vbBox(boxPositions, 4 * 4 * sizeof(float));
-
-        VertexBufferLayout layoutBox;
-        layoutBox.Push<float>(2);
-        layoutBox.Push<float>(2);
-        vaBox.AddBuffer(vbBox, layoutBox);
-
-        IndexBuffer ibBox(boxIndices, 6);
+        RenderableObject *Box = RenderableObject::MakeObject2D(boxPositions, 4 * 4 * sizeof(float), boxIndices, 6, shader);
 
         Texture textureHitbox("res/textures/hitbox.png");
         textureHitbox.Bind(0);
@@ -198,12 +154,14 @@ int main(void)
         textureHurtbox.Bind(0);
         shader.SetUniform1i("u_Texture", 0);
 
+        Shader shaderAnimation("res/shaders/Animation.Shader");
+        shaderAnimation.Bind();
 
         float playerPositions[] = {
-            -64.0f,   0.0f,0.1f,   0.0f, 0.0f,
+            -64.0f,   0.0f, 0.1f,   0.0f, 0.0f,
             64.0f, 0.0f, 0.1f,   AnimationStripHeight / AnimationStripLength, 0.0f,
             64.0f, 128.0f, 0.1f, AnimationStripHeight / AnimationStripLength, 1.0f,
-            -64.0f,   128.0f,0.1f, 0.0f, 1.0f,
+            -64.0f,   128.0f, 0.1f, 0.0f, 1.0f,
         };
 
         unsigned int playerIndices[] = {
@@ -211,23 +169,9 @@ int main(void)
             2,3,0,
         };
 
-        VertexArray vaPlayer;
-        VertexBuffer vbPlayer(playerPositions, 4 * 4 * sizeof(float));
+        RenderableObject* Player = RenderableObject::MakeObject3D(playerPositions, 5 * 4 * sizeof(float), playerIndices, 6, shaderAnimation);
 
-        VertexBufferLayout layoutPlayer;
-        layoutPlayer.Push<float>(3);
-        layoutPlayer.Push<float>(2);
-        vaPlayer.AddBuffer(vbPlayer, layoutPlayer);
-
-        IndexBuffer ibPlayer(playerIndices, 6);
-
-        Shader shaderAnimation("res/shaders/Animation.Shader");
-        shader.Bind();
-
-        vaPlayer.Unbind();
-        vbPlayer.Unbind();
-        ibPlayer.Unbind();
-        shader.Unbind();
+        shaderAnimation.Unbind();
 
         Renderer renderer;
 
@@ -318,7 +262,7 @@ int main(void)
                 textureMenuBackground.Bind(0);
                 shader.SetUniform1i("u_Texture", 0);
 
-                renderer.Draw(vaMenuBackground, ibMenuBackground, shader);
+                renderer.Draw(MenuBackground->vertexArray, MenuBackground->indexBuffer, MenuBackground->relatedShader);
 
                 switch (menuState)
                 {
@@ -434,7 +378,7 @@ int main(void)
                 textureGameBackground.Bind(0);
                 shader.SetUniform1i("u_Texture", 0);
                 
-                renderer.Draw(vaGameBackground, ibGameBackground, shader);
+                renderer.Draw(GameBackground->vertexArray, GameBackground->indexBuffer, GameBackground->relatedShader);
                 
                 player1Model = glm::translate(glm::mat4(1.0f), glm::vec3(gameModel.GetPlayerPosition(1).x, gameModel.GetPlayerPosition(1).y, 0));
                 player1MVP = gameProj * gameView * player1Model;
@@ -447,7 +391,7 @@ int main(void)
                 shaderAnimation.SetUniform1i("u_Texture", 0);
                 shaderAnimation.SetUniform1f("u_FrameOffset", float(AnimationStripHeight / AnimationStripLength * framenum));
 
-                renderer.Draw(vaPlayer, ibPlayer, shaderAnimation);
+                renderer.Draw(Player->vertexArray, Player->indexBuffer, shaderAnimation);
 
                 player2Model = glm::translate(glm::mat4(1.0f), glm::vec3(gameModel.GetPlayerPosition(2).x, gameModel.GetPlayerPosition(2).y, 0));
                 player2MVP = gameProj * gameView * player2Model;
@@ -460,7 +404,7 @@ int main(void)
                 shaderAnimation.SetUniform1i("u_Texture", 0);
                 shaderAnimation.SetUniform1f("u_FrameOffset", float(AnimationStripHeight / AnimationStripLength * framenum));
 
-                renderer.Draw(vaPlayer, ibPlayer, shaderAnimation);
+                renderer.Draw(Player->vertexArray, Player->indexBuffer, shaderAnimation);
 
                 boxModel = glm::translate(glm::mat4(1.0f), glm::vec3(player1hurtBox.lowerLeft.x,player1hurtBox.lowerLeft.y,0)) * glm::scale(glm::mat4(1.0f), glm::vec3(player1hurtBox.upperRight.x - player1hurtBox.lowerLeft.x, player1hurtBox.upperRight.y - player1hurtBox.lowerLeft.y, 1));
                 boxMVP = gameProj * gameView * boxModel;
@@ -471,7 +415,7 @@ int main(void)
                 shader.SetUniform1i("u_Texture", 0);
 
                 if (showHitboxes)
-                    renderer.Draw(vaBox, ibBox, shader);
+                    renderer.Draw(Box->vertexArray, Box->indexBuffer, Box->relatedShader);
 
                 boxModel = glm::translate(glm::mat4(1.0f), glm::vec3(player2hurtBox.lowerLeft.x, player2hurtBox.lowerLeft.y, 0)) * glm::scale(glm::mat4(1.0f), glm::vec3(player2hurtBox.upperRight.x - player2hurtBox.lowerLeft.x, player2hurtBox.upperRight.y - player2hurtBox.lowerLeft.y, 1));
                 boxMVP = gameProj * gameView * boxModel;
@@ -482,7 +426,7 @@ int main(void)
                 shader.SetUniform1i("u_Texture", 0);
 
                 if (showHitboxes)
-                    renderer.Draw(vaBox, ibBox, shader);
+                    renderer.Draw(Box->vertexArray, Box->indexBuffer, Box->relatedShader);
 
                 boxModel = glm::translate(glm::mat4(1.0f), glm::vec3(player1hitBox.lowerLeft.x, player1hitBox.lowerLeft.y, 0)) * glm::scale(glm::mat4(1.0f), glm::vec3(player1hitBox.upperRight.x - player1hitBox.lowerLeft.x, player1hitBox.upperRight.y - player1hitBox.lowerLeft.y, 1));
                 boxMVP = gameProj * gameView * boxModel;
@@ -493,7 +437,7 @@ int main(void)
                 shader.SetUniform1i("u_Texture", 0);
 
                 if (showHitboxes)
-                    renderer.Draw(vaBox, ibBox, shader);
+                    renderer.Draw(Box->vertexArray, Box->indexBuffer, Box->relatedShader);
 
                 boxModel = glm::translate(glm::mat4(1.0f), glm::vec3(player2hitBox.lowerLeft.x, player2hitBox.lowerLeft.y, 0)) * glm::scale(glm::mat4(1.0f), glm::vec3(player2hitBox.upperRight.x - player2hitBox.lowerLeft.x, player2hitBox.upperRight.y - player2hitBox.lowerLeft.y, 1));
                 boxMVP = gameProj * gameView * boxModel;
@@ -504,7 +448,7 @@ int main(void)
                 shader.SetUniform1i("u_Texture", 0);
 
                 if (showHitboxes)
-                    renderer.Draw(vaBox, ibBox, shader);
+                    renderer.Draw(Box->vertexArray, Box->indexBuffer, Box->relatedShader);
 
                 {
                     int width, height;
@@ -615,6 +559,11 @@ int main(void)
             /* Poll for and process events */
             glfwPollEvents();
         }
+        delete GameBackground;
+        delete MenuBackground;
+        delete Box;
+        delete Player;
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
