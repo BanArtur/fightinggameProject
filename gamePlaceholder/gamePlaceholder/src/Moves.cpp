@@ -143,7 +143,7 @@ Moves::Moves() {
 		}
 
 		attackHeavy.relatedState = PlayerStateEnum::AttackH;
-		attackHeavy.damage = 20;
+		attackHeavy.damage = 50;
 		attackHeavy.hitStun = 40;
 	}
 
