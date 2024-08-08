@@ -119,7 +119,6 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            //TODO: make classes for individual switch cases
             switch (state)
             {
             case StartUp:
@@ -160,8 +159,6 @@ int main(void)
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
-
-
 
     glfwTerminate();
     return 0;
