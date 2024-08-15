@@ -97,7 +97,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLEW\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022;$(SolutionDir)Dependencies\FIREBASE\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3_mt.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;firebase_app.lib;firebase_auth.lib;firebase_database.lib;firebase_firestore.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;shell32.lib;iphlpapi.lib;psapi.lib;userenv.lib</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;firebase_app.lib;firebase_auth.lib;firebase_database.lib;firebase_firestore.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;shell32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,7 +117,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLEW\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022;$(SolutionDir)Dependencies\FIREBASE\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3_mt.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;firebase_app.lib;firebase_auth.lib;firebase_database.lib;firebase_firestore.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;shell32.lib;iphlpapi.lib;psapi.lib;userenv.lib</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;opengl32.lib;User32.lib;Gdi32.lib;Shell32.lib;glew32s.lib;firebase_app.lib;firebase_auth.lib;firebase_database.lib;firebase_firestore.lib;advapi32.lib;ws2_32.lib;crypt32.lib;rpcrt4.lib;ole32.lib;shell32.lib;iphlpapi.lib;psapi.lib;userenv.lib;Dbghelp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

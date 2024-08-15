@@ -32,8 +32,14 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
 
+#include <firebase/app.h>
+#include <firebase/database.h>
+#include <firebase/auth.h>
+#include <firebase/firestore.h>
+
 int main(void)
 {
+
     GLFWwindow* window;
 
     /* Initialize the library */
@@ -78,6 +84,14 @@ int main(void)
 
         GLCall(glEnable(GL_BLEND));
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+        firebase::AppOptions appOptions;
+        appOptions.set_app_id("1:698482346110:android:54e7665125e3402b98b02f");
+        appOptions.set_api_key("AIzaSyD0FUhK3TmHAckxU6qmCBLmTZCQpiTZfRY");
+        appOptions.set_project_id("fightinggameproject-d00a1");
+        firebase::App* app = firebase::App::Create(appOptions);
+        firebase::database::Database* database = firebase::database::Database::GetInstance(app);
+        firebase::firestore::Firestore* firestore = firebase::firestore::Firestore::GetInstance(app);
 
         ApplicationState state = ApplicationState::StartUp;
 
@@ -158,6 +172,10 @@ int main(void)
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
+
+        delete firestore;
+        delete database;
+        delete app;
     }
 
     glfwTerminate();
