@@ -64,6 +64,14 @@ void MenuController::Render() {
         if (ImGui::Button("Local Game", buttonSize)) {
             state = ApplicationState::GameStart;
         }
+        if (ImGui::Button("Online Game", buttonSize)) {
+            if (false) {
+                //TODO logged in
+            }
+            else {
+                menuState = MenuState::AccountMain;
+            }
+        }
         if (ImGui::Button("Settings", buttonSize)) {
             menuState = MenuState::Settings;
             std::cout << "Settings clicked" << std::endl;
@@ -101,6 +109,88 @@ void MenuController::Render() {
         ImGui::End();
     }
     break;
+    case AccountMain:
+    {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        ImVec2 size, pos, buttonSize;
+        size.x = 120;
+        size.y = 200;
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
+        buttonSize.x = 100;
+        buttonSize.y = 50;
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(pos);
+        bool open = true;
+
+        ImGui::Begin("AccountMain", &open, window_flags);
+        if (ImGui::Button("Login", buttonSize)) {
+            menuState = MenuState::AccountLogin;
+        }
+        if (ImGui::Button("Register", buttonSize)) {
+            menuState = MenuState::AccountRegister;
+        }
+        if (ImGui::Button("Back", buttonSize)) {
+            menuState = MenuState::Main;
+        }
+        ImGui::End();
+    }
+    break;    
+    case AccountRegister:
+    {
+        ImGuiInputTextCallbackData callback;
+        char emailAddress[256], username[256], password[256], passwordAgain[256];
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        ImVec2 size, pos, buttonSize;
+        size.x = 120;
+        size.y = 200;
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
+        buttonSize.x = 100;
+        buttonSize.y = 50;
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(pos);
+        bool open = true;
+        ImGui::InputText("email", emailAddress, IM_ARRAYSIZE(emailAddress));
+        ImGui::InputText("username", username, IM_ARRAYSIZE(username));
+        ImGui::InputText("password", password, IM_ARRAYSIZE(password));
+        ImGui::InputText("passwordAgain", passwordAgain, IM_ARRAYSIZE(passwordAgain));
+        ImGui::Begin("AccountMain", &open, window_flags);
+        if (ImGui::Button("Register Account", buttonSize)) {
+            if (false) {
+                //correct
+            }
+            else {
+                //incorrect
+            }
+        }
+        if (ImGui::Button("Back", buttonSize)) {
+            menuState = MenuState::Main;
+        }
+        ImGui::End();
+    }
+    break;
+    case AccountLogin:
+
+    break;
+    case AccountManage:
+        if (false) {
+            //TODO logged in
+        }
+        else {
+            menuState = MenuState::AccountMain;
+        }
+        break;
     default:
         break;
     }
