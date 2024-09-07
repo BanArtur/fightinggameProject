@@ -47,7 +47,7 @@ void MenuController::Render() {
         glfwGetWindowSize(window, &width, &height);
         ImVec2 size, pos, buttonSize;
         size.x = 120;
-        size.y = 200;
+        size.y = 230;
         pos.x = floor(width / 2) - floor(size.x / 2);
         pos.y = floor(3 * height / 4) - floor(size.y / 2);
         buttonSize.x = 100;
@@ -134,6 +134,10 @@ void MenuController::Render() {
         }
         if (ImGui::Button("Register", buttonSize)) {
             menuState = MenuState::AccountRegister;
+            memset(emailAddress, 0, sizeof(emailAddress));
+            memset(username, 0, sizeof(username));
+            memset(password, 0, sizeof(password));
+            memset(passwordAgain, 0, sizeof(passwordAgain));
         }
         if (ImGui::Button("Back", buttonSize)) {
             menuState = MenuState::Main;
@@ -144,11 +148,10 @@ void MenuController::Render() {
     case AccountRegister:
     {
         ImGuiInputTextCallbackData callback;
-        char emailAddress[256], username[256], password[256], passwordAgain[256];
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         ImVec2 size, pos, buttonSize;
-        size.x = 120;
+        size.x = 250;
         size.y = 200;
         pos.x = floor(width / 2) - floor(size.x / 2);
         pos.y = floor(3 * height / 4) - floor(size.y / 2);
@@ -161,11 +164,11 @@ void MenuController::Render() {
         ImGui::SetNextWindowSize(size);
         ImGui::SetNextWindowPos(pos);
         bool open = true;
+        ImGui::Begin("AccountMain", &open, window_flags);
         ImGui::InputText("email", emailAddress, IM_ARRAYSIZE(emailAddress));
         ImGui::InputText("username", username, IM_ARRAYSIZE(username));
         ImGui::InputText("password", password, IM_ARRAYSIZE(password));
         ImGui::InputText("passwordAgain", passwordAgain, IM_ARRAYSIZE(passwordAgain));
-        ImGui::Begin("AccountMain", &open, window_flags);
         if (ImGui::Button("Register Account", buttonSize)) {
             if (false) {
                 //correct
