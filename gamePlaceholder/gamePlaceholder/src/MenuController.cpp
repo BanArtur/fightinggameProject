@@ -1,6 +1,6 @@
 #include "MenuController.h"
 
-MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb) {
+MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb), application(app_p) {
     menuProj = glm::ortho(0.0f, 150.0f, 0.0f, 100.0f, -1.0f, 1.0f);
     menuView = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
@@ -17,6 +17,8 @@ MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, App
     };
 
     MenuBackground = RenderableObject::MakeObject2D(menuBackgroundPositions, 4 * 4 * sizeof(float), menuBackgroundIndices, 6, shader);
+    authentication = firebase::auth::Auth::GetAuth(application);
+    errorMessage = "";
     Init();
 }
 
@@ -170,6 +172,78 @@ void MenuController::Render() {
         ImGui::InputText("password", password, IM_ARRAYSIZE(password));
         ImGui::InputText("passwordAgain", passwordAgain, IM_ARRAYSIZE(passwordAgain));
         if (ImGui::Button("Register Account", buttonSize)) {
+            if (!IsEmailValid(emailAddress)) {
+                errorMessage = "Entered email address was not valid!";
+                menuState = MenuState::AccountError;
+            }
+            else if (!(std::string(password) == std::string(passwordAgain))) {
+                errorMessage = "Reentered password did not match the original!";
+                menuState = MenuState::AccountError;
+            }
+            else if (!IsPasswordValid(password, passwordAgain)) {
+                errorMessage = "The entered password did not fit requirements!";
+                menuState = MenuState::AccountError;
+            }
+            else {
+                authentication->CreateUserWithEmailAndPassword(emailAddress, password);
+            }
+        }
+        if (ImGui::Button("Back", buttonSize)) {
+            menuState = MenuState::Main;
+        }
+        ImGui::End();
+    }
+    break;
+    case AccountError:
+    {
+        ImGuiInputTextCallbackData callback;
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        ImVec2 size, pos, buttonSize;
+        size.x = 250;
+        size.y = 200;
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
+        buttonSize.x = 100;
+        buttonSize.y = 50;
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(pos);
+        bool open = true;
+        ImGui::Begin("AccountMain", &open, window_flags);
+        ImGui::Text(errorMessage.c_str());
+        if (ImGui::Button("Back", buttonSize)) {
+            menuState = MenuState::Main;
+        }
+        ImGui::End();
+    }
+    break;
+    case AccountLogin:
+    {
+        ImGuiInputTextCallbackData callback;
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        ImVec2 size, pos, buttonSize;
+        size.x = 250;
+        size.y = 200;
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
+        buttonSize.x = 100;
+        buttonSize.y = 50;
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(pos);
+        bool open = true;
+        ImGui::Begin("AccountLogin", &open, window_flags);
+        ImGui::InputText("email", emailAddress, IM_ARRAYSIZE(emailAddress));
+        ImGui::InputText("password", password, IM_ARRAYSIZE(password));
+        if (ImGui::Button("Login", buttonSize)) {
             if (false) {
                 //correct
             }
@@ -182,9 +256,6 @@ void MenuController::Render() {
         }
         ImGui::End();
     }
-    break;
-    case AccountLogin:
-
     break;
     case AccountManage:
         if (false) {

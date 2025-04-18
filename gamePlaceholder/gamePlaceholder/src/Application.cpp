@@ -116,7 +116,7 @@ int main(void)
         ImGui_ImplOpenGL3_Init(glsl_version);
 
         bool showHitboxes = false;
-        MenuController menuController(shader, renderer, window, state, showHitboxes);
+        MenuController menuController(shader, renderer, window, state, showHitboxes, app);
         GameController gameController(shader, shaderAnimation, renderer, window, state, showHitboxes);
 
         GameModel gameModel;

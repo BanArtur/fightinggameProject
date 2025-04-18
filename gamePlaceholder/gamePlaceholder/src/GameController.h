@@ -12,6 +12,7 @@
 #include "Texture.h"
 #include "RenderableObject.h"
 #include "TextureHandler.h"
+#include "LoginChecker.h"
 
 class GameController {
 private:

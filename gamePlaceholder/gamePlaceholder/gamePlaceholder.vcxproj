@@ -161,6 +161,7 @@
     <ClCompile Include="src\Geo.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
+    <ClCompile Include="src\LoginChecker.cpp" />
     <ClCompile Include="src\MenuController.cpp" />
     <ClCompile Include="src\Moves.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="src\Geo.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\InputHandler.h" />
+    <ClInclude Include="src\LoginChecker.h" />
     <ClInclude Include="src\MenuController.h" />
     <ClInclude Include="src\Moves.h" />
     <ClInclude Include="src\Player.h" />
