@@ -11,6 +11,8 @@ TextureHandler::TextureHandler() {
     player1LightLeft = new Texture("res/textures/playercharacter1lightleft.png");
     player1HeavyRight = new Texture("res/textures/playercharacter1heavyright.png");
     player1HeavyLeft = new Texture("res/textures/playercharacter1heavyleft.png");
+    player1StunRight = new Texture("res/textures/playercharacter1stunright.png");
+    player1StunLeft = new Texture("res/textures/playercharacter1stunleft.png");
     player2IdleRight = new Texture("res/textures/playercharacter2idleright.png");
     player2IdleLeft = new Texture("res/textures/playercharacter2idleleft.png");
     player2WalkForwardRight = new Texture("res/textures/playercharacter2walkforwardright.png");
@@ -21,6 +23,8 @@ TextureHandler::TextureHandler() {
     player2LightLeft = new Texture("res/textures/playercharacter2lightleft.png");
     player2HeavyRight = new Texture("res/textures/playercharacter2heavyright.png");
     player2HeavyLeft = new Texture("res/textures/playercharacter2heavyleft.png");
+    player2StunRight = new Texture("res/textures/playercharacter2stunright.png");
+    player2StunLeft = new Texture("res/textures/playercharacter2stunleft.png");
 }
 
 TextureHandler::~TextureHandler() {
@@ -34,6 +38,8 @@ TextureHandler::~TextureHandler() {
     delete player1LightLeft;
     delete player1HeavyRight;
     delete player1HeavyLeft;
+    delete player1StunRight;
+    delete player1StunLeft;
     delete player2IdleRight;
     delete player2IdleLeft;
     delete player2WalkForwardRight;
@@ -44,6 +50,8 @@ TextureHandler::~TextureHandler() {
     delete player2LightLeft;
     delete player2HeavyRight;
     delete player2HeavyLeft;
+    delete player2StunRight;
+    delete player2StunLeft;
 }
 
 
@@ -118,6 +126,34 @@ void TextureHandler::BindTexture(PlayerStateEnum state, int playernum, int orien
         }
         else {
             player2HeavyLeft->Bind(0);
+        }
+        break;
+    case HitStun:
+        if (playernum == 1 && orientation == 1) {
+            player1StunRight->Bind(0);
+        }
+        else if (playernum == 1 && orientation == -1) {
+            player1StunLeft->Bind(0);
+        }
+        else if (playernum == 2 && orientation == 1) {
+            player2StunRight->Bind(0);
+        }
+        else {
+            player2StunLeft->Bind(0);
+        }
+        break;
+    case BlockStun:
+        if (playernum == 1 && orientation == 1) {
+            player1StunRight->Bind(0);
+        }
+        else if (playernum == 1 && orientation == -1) {
+            player1StunLeft->Bind(0);
+        }
+        else if (playernum == 2 && orientation == 1) {
+            player2StunRight->Bind(0);
+        }
+        else {
+            player2StunLeft->Bind(0);
         }
         break;
     default:

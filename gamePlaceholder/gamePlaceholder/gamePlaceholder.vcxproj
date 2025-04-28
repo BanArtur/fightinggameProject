@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\DatabaseHandler.cpp" />
     <ClCompile Include="src\GameController.cpp" />
     <ClCompile Include="src\GameModel.cpp" />
     <ClCompile Include="src\Geo.cpp" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AppEnums.h" />
+    <ClInclude Include="src\DatabaseHandler.h" />
     <ClInclude Include="src\GameController.h" />
     <ClInclude Include="src\GameModel.h" />
     <ClInclude Include="src\Geo.h" />
@@ -485,6 +487,8 @@
     <Image Include="res\textures\playercharacter1idleright.png" />
     <Image Include="res\textures\playercharacter1lightleft.png" />
     <Image Include="res\textures\playercharacter1lightright.png" />
+    <Image Include="res\textures\playercharacter1stunleft.png" />
+    <Image Include="res\textures\playercharacter1stunright.png" />
     <Image Include="res\textures\playercharacter1walkbackleft.png" />
     <Image Include="res\textures\playercharacter1walkbackright.png" />
     <Image Include="res\textures\playercharacter1walkforwardleft.png" />
@@ -496,6 +500,8 @@
     <Image Include="res\textures\playercharacter2idleright.png" />
     <Image Include="res\textures\playercharacter2lightleft.png" />
     <Image Include="res\textures\playercharacter2lightright.png" />
+    <Image Include="res\textures\playercharacter2stunleft.png" />
+    <Image Include="res\textures\playercharacter2stunright.png" />
     <Image Include="res\textures\playercharacter2walkbackleft.png" />
     <Image Include="res\textures\playercharacter2walkbackright.png" />
     <Image Include="res\textures\playercharacter2walkforwardleft.png" />

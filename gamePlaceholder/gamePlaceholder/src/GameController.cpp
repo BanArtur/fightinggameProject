@@ -1,7 +1,7 @@
 #include "GameController.h"
 
-GameController::GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb) :
-    renderer(rend), shader(sh), shaderAnimation(ansh), state(st), showHitboxes(hitb), window(wind),
+GameController::GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb, bool& userLogged) :
+    renderer(rend), shader(sh), shaderAnimation(ansh), state(st), showHitboxes(hitb), window(wind), userLoggedIn(userLogged),
     textureHitbox("res/textures/hitbox.png"), textureHurtbox("res/textures/hurtbox.png"), textureGameBackground("res/textures/gameBackground.png") {
 
     float gameBackgroundPositions[] = {
@@ -46,6 +46,7 @@ GameController::GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwin
 }
 
 GameController::~GameController() {
+    guestRanking = 0;
     delete GameBackground;
     delete Player;
     delete Box;
@@ -310,5 +311,37 @@ void GameController::RenderGameEnd() {
             state = ApplicationState::MenuStart;
         }
         ImGui::End();
+    }
+}
+
+void GameController::RenderGameBegin() {
+    {
+        ImGuiInputTextCallbackData callback;
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        ImVec2 size, pos, buttonSize;
+        size.x = 250;
+        size.y = 200;
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
+        buttonSize.x = 100;
+        buttonSize.y = 50;
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(pos);
+        bool open = true;
+        ImGui::Begin("AccountMain", &open, window_flags);
+        ImGui::Text("Please enter the ranking score of the guest player.\nIt has to be a non zero number");
+        ImGui::InputInt("Guest player ranking score", &guestRanking);
+        if (ImGui::Button("Enter", buttonSize)) {
+            state = ApplicationState::GameOngoing;
+        }
+        ImGui::End();
+        if (guestRanking < 0) {
+            guestRanking = 0;
+        }
     }
 }

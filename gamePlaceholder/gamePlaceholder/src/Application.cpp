@@ -37,6 +37,8 @@
 #include <firebase/auth.h>
 #include <firebase/firestore.h>
 
+#include "DatabaseHandler.h"
+
 int main(void)
 {
 
@@ -65,11 +67,12 @@ int main(void)
         return -1;
     }*/
 
-    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "Cave of Combat", NULL, NULL);
 
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    glfwSetWindowAttrib(window, GLFW_RESIZABLE, false);
 
     glfwSwapInterval(1);
 
@@ -90,8 +93,7 @@ int main(void)
         appOptions.set_api_key("AIzaSyD0FUhK3TmHAckxU6qmCBLmTZCQpiTZfRY");
         appOptions.set_project_id("fightinggameproject-d00a1");
         firebase::App* app = firebase::App::Create(appOptions);
-        firebase::database::Database* database = firebase::database::Database::GetInstance(app);
-        firebase::firestore::Firestore* firestore = firebase::firestore::Firestore::GetInstance(app);
+        DatabaseHandler* database = new DatabaseHandler(app);
 
         ApplicationState state = ApplicationState::StartUp;
 
@@ -116,8 +118,9 @@ int main(void)
         ImGui_ImplOpenGL3_Init(glsl_version);
 
         bool showHitboxes = false;
-        MenuController menuController(shader, renderer, window, state, showHitboxes, app);
-        GameController gameController(shader, shaderAnimation, renderer, window, state, showHitboxes);
+        bool userLoggedIn = false;
+        MenuController menuController(shader, renderer, window, state, showHitboxes, app, userLoggedIn, database);
+        GameController gameController(shader, shaderAnimation, renderer, window, state, showHitboxes, userLoggedIn);
 
         GameModel gameModel;
 
@@ -146,13 +149,19 @@ int main(void)
                 menuController.Render();
                 break;
             case GameStart:
-                state = ApplicationState::GameOngoing;
                 gameController.Init();
+                if (!userLoggedIn) {
+                    state = ApplicationState::GameOngoing;
+                }
+                else {
+                    gameController.RenderGameBegin();
+                }
                 break;
             case GameOngoing:
                 gameController.Render();
                 break;
             case GameEnd:
+
                 gameController.RenderGameEnd();
                 break;
             default:
@@ -173,7 +182,7 @@ int main(void)
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
 
-        delete firestore;
+        menuController.CleanUp();
         delete database;
         delete app;
     }

@@ -12,7 +12,6 @@
 #include "Texture.h"
 #include "RenderableObject.h"
 #include "TextureHandler.h"
-#include "LoginChecker.h"
 
 class GameController {
 private:
@@ -25,6 +24,7 @@ private:
 	Shader& shaderAnimation;
 	ApplicationState& state;
 	bool& showHitboxes;
+	bool& userLoggedIn;
 
 	GameModel gameModel;
 	InputHandler inputHandler;
@@ -42,6 +42,7 @@ private:
 	float cameraPos;
 
 	int gameEndFrames;
+	int guestRanking;
 
 	glm::mat4 gameProj;
 	glm::mat4 gameView;
@@ -55,10 +56,11 @@ private:
 	Texture textureGameBackground;
 
 public:
-	GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb);
+	GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb, bool& userLogged);
 	~GameController();
 
 	void Init();
 	void Render();
 	void RenderGameEnd();
+	void RenderGameBegin();
 };

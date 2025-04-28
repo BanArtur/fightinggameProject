@@ -1,6 +1,7 @@
 #include "MenuController.h"
+#include <iostream>
 
-MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb), application(app_p) {
+MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p, bool& userlogged, DatabaseHandler* datab) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb), application(app_p), userLoggedIn(userlogged), database(datab) {
     menuProj = glm::ortho(0.0f, 150.0f, 0.0f, 100.0f, -1.0f, 1.0f);
     menuView = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
@@ -28,6 +29,7 @@ MenuController::~MenuController() {
 
 void MenuController::Init() {
     menuState = MenuState::Main;
+    userLoggedIn = false;
 }
 
 void MenuController::Render() {
@@ -63,12 +65,12 @@ void MenuController::Render() {
         bool open = true;
 
         ImGui::Begin("Menu", &open, window_flags);
-        if (ImGui::Button("Local Game", buttonSize)) {
+        if (ImGui::Button("Play", buttonSize)) {
             state = ApplicationState::GameStart;
         }
-        if (ImGui::Button("Online Game", buttonSize)) {
-            if (false) {
-                //TODO logged in
+        if (ImGui::Button("Account", buttonSize)) {
+            if (userLoggedIn) {
+                menuState = MenuState::AccountManage;
             }
             else {
                 menuState = MenuState::AccountMain;
@@ -133,6 +135,8 @@ void MenuController::Render() {
         ImGui::Begin("AccountMain", &open, window_flags);
         if (ImGui::Button("Login", buttonSize)) {
             menuState = MenuState::AccountLogin;
+            memset(emailAddress, 0, sizeof(emailAddress));
+            memset(password, 0, sizeof(password));
         }
         if (ImGui::Button("Register", buttonSize)) {
             menuState = MenuState::AccountRegister;
@@ -185,9 +189,62 @@ void MenuController::Render() {
                 menuState = MenuState::AccountError;
             }
             else {
-                authentication->CreateUserWithEmailAndPassword(emailAddress, password);
+                firebase::Future<firebase::auth::AuthResult> registerFutureResult = authentication->CreateUserWithEmailAndPassword(emailAddress, password);
+                while (registerFutureResult.status() == firebase::kFutureStatusPending) {
+                    std::cout << "Registering account..\n";
+                }
+                firebase::auth::AuthError error = static_cast<firebase::auth::AuthError>(registerFutureResult.error());
+                if (error != firebase::auth::kAuthErrorNone) {
+                    errorMessage = registerFutureResult.error_message();
+                    menuState = MenuState::AccountError;
+                }
+                else {
+                    firebase::Future<firebase::auth::AuthResult> signInFutureResult = authentication->SignInWithEmailAndPassword(emailAddress, password);
+                    while (signInFutureResult.status() == firebase::kFutureStatusPending) {
+                        std::cout << "Registering account..\n";
+                    }
+                    firebase::auth::AuthError error = static_cast<firebase::auth::AuthError>(signInFutureResult.error());
+                    if (error != firebase::auth::kAuthErrorNone) {
+                        errorMessage = signInFutureResult.error_message();
+                        menuState = MenuState::AccountError;
+                    }
+                    else {
+                        firebase::auth::User user = signInFutureResult.result()->user;
+                        database->CreateNewUserData(user.uid(), UserInfo{username,500});
+                        userLoggedIn = true;
+                        menuState = MenuState::AccountSuccess;
+                    }
+                }
             }
         }
+        if (ImGui::Button("Back", buttonSize)) {
+            menuState = MenuState::Main;
+        }
+        ImGui::End();
+    }
+    break;
+    case AccountSuccess:
+    {
+        ImGuiInputTextCallbackData callback;
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        ImVec2 size, pos, buttonSize;
+        size.x = 250;
+        size.y = 200;
+        pos.x = floor(width / 2) - floor(size.x / 2);
+        pos.y = floor(3 * height / 4) - floor(size.y / 2);
+        buttonSize.x = 100;
+        buttonSize.y = 50;
+        ImGuiWindowFlags window_flags = 0;
+        window_flags |= ImGuiWindowFlags_NoBackground;
+        window_flags |= ImGuiWindowFlags_NoTitleBar;
+        window_flags |= ImGuiWindowFlags_NoResize;
+        ImGui::SetNextWindowSize(size);
+        ImGui::SetNextWindowPos(pos);
+        bool open = true;
+        ImGui::Begin("AccountMain", &open, window_flags);
+        ImGui::Text("Account successfully registered!");
+        ImGui::Text("You are now logged in");
         if (ImGui::Button("Back", buttonSize)) {
             menuState = MenuState::Main;
         }
@@ -244,11 +301,18 @@ void MenuController::Render() {
         ImGui::InputText("email", emailAddress, IM_ARRAYSIZE(emailAddress));
         ImGui::InputText("password", password, IM_ARRAYSIZE(password));
         if (ImGui::Button("Login", buttonSize)) {
-            if (false) {
-                //correct
+            firebase::Future<firebase::auth::AuthResult> signInFutureResult = authentication->SignInWithEmailAndPassword(emailAddress, password);
+            while (signInFutureResult.status() == firebase::kFutureStatusPending) {
+                std::cout << "Registering account..\n";
+            }
+            firebase::auth::AuthError error = static_cast<firebase::auth::AuthError>(signInFutureResult.error());
+            if (error != firebase::auth::kAuthErrorNone) {
+                errorMessage = signInFutureResult.error_message();
+                menuState = MenuState::AccountError;
             }
             else {
-                //incorrect
+                userLoggedIn = true;
+                menuState = MenuState::AccountSuccess;
             }
         }
         if (ImGui::Button("Back", buttonSize)) {
@@ -258,14 +322,78 @@ void MenuController::Render() {
     }
     break;
     case AccountManage:
-        if (false) {
-            //TODO logged in
+        if (userLoggedIn) {
+            {
+                ImGuiInputTextCallbackData callback;
+                int width, height;
+                glfwGetWindowSize(window, &width, &height);
+                ImVec2 size, pos, buttonSize;
+                size.x = 250;
+                size.y = 200;
+                pos.x = floor(width / 2) - floor(size.x / 2);
+                pos.y = floor(3 * height / 4) - floor(size.y / 2);
+                buttonSize.x = 100;
+                buttonSize.y = 50;
+                ImGuiWindowFlags window_flags = 0;
+                window_flags |= ImGuiWindowFlags_NoBackground;
+                window_flags |= ImGuiWindowFlags_NoTitleBar;
+                window_flags |= ImGuiWindowFlags_NoResize;
+                ImGui::SetNextWindowSize(size);
+                ImGui::SetNextWindowPos(pos);
+                bool open = true;
+                ImGui::Begin("AccountManage", &open, window_flags);
+                if (ImGui::Button("Account Info", buttonSize)) {
+                    menuState = MenuState::AccountInfo;
+                }
+                if (ImGui::Button("Log out", buttonSize)) {
+                    authentication->SignOut();
+                    menuState = MenuState::Main;
+                    userLoggedIn = false;
+                }
+                if (ImGui::Button("Back", buttonSize)) {
+                    menuState = MenuState::Main;
+                }
+                ImGui::End();
+            }
         }
         else {
             menuState = MenuState::AccountMain;
         }
         break;
+    case AccountInfo:
+        {
+            UserInfo userInfo = database->GetUserInfo(authentication->current_user().uid());
+            ImGuiInputTextCallbackData callback;
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+            ImVec2 size, pos, buttonSize;
+            size.x = 250;
+            size.y = 200;
+            pos.x = floor(width / 2) - floor(size.x / 2);
+            pos.y = floor(3 * height / 4) - floor(size.y / 2);
+            buttonSize.x = 100;
+            buttonSize.y = 50;
+            ImGuiWindowFlags window_flags = 0;
+            window_flags |= ImGuiWindowFlags_NoBackground;
+            window_flags |= ImGuiWindowFlags_NoTitleBar;
+            window_flags |= ImGuiWindowFlags_NoResize;
+            ImGui::SetNextWindowSize(size);
+            ImGui::SetNextWindowPos(pos);
+            bool open = true;
+            ImGui::Begin("AccountInfo", &open, window_flags);
+            ImGui::Text(("Username: " + userInfo.UserName).c_str());
+            ImGui::Text(("Rating: " + std::to_string(userInfo.ratingScore)).c_str());
+            if (ImGui::Button("Back", buttonSize)) {
+                menuState = MenuState::Main;
+            }
+            ImGui::End();
+        }
+        break;
     default:
         break;
     }
+}
+
+void MenuController::CleanUp() {
+    delete authentication;
 }

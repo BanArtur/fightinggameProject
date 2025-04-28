@@ -1,4 +1,4 @@
 #pragma once
 
 enum ApplicationState { StartUp, MenuStart, MenuOngoing, GameStart, GameOngoing, GameEnd };
-enum MenuState { Main, Settings, AccountRegister, AccountLogin, AccountManage, AccountMain, AccountError };
+enum MenuState { Main, Settings, AccountRegister, AccountLogin, AccountManage, AccountMain, AccountError, AccountSuccess, AccountInfo };

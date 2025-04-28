@@ -21,19 +21,3 @@ Rectangle FlipRectangle(Rectangle r)
 	tmp.upperRight.y = r.upperRight.y;
 	return tmp;
 }
-/*
-Rectangle::Rectangle(glm::vec2 p1, glm::vec2 p2) {
-	if (p2.x < p1.x || p2.y < p1.y) {
-		lowerLeft = p2;
-		upperRight = p1;
-	}
-	else {
-		lowerLeft = p1;
-		upperRight = p2;
-	}
-}
-
-Rectangle::~Rectangle() {
-
-}
-*/

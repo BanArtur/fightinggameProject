@@ -1,6 +1,7 @@
 #pragma once
-#include <iostream>
 #include <algorithm>
+#include <future>
+#include <string>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -21,9 +22,10 @@
 #include "imgui/imgui_impl_glfw.h"
 
 #include <firebase/app.h>
-#include <firebase/database.h>
 #include <firebase/auth.h>
 #include <firebase/firestore.h>
+
+#include "DatabaseHandler.h"
 
 class MenuController {
 private:
@@ -42,16 +44,21 @@ private:
 
 	bool& showHitboxes;
 	char emailAddress[256], username[256], password[256], passwordAgain[256];
+	bool& userLoggedIn;
 
 	firebase::App* application;
 	firebase::auth::Auth* authentication;
 
+	DatabaseHandler* database;
+
 	std::string errorMessage;
 public:
-	MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p);
+	MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p, bool& userlogged, DatabaseHandler* datab);
 	~MenuController();
 
 	void Init();
 
 	void Render();
+
+	void CleanUp();
 };

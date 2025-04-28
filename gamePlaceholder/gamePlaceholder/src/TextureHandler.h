@@ -14,6 +14,8 @@ private:
     Texture* player1LightLeft;
     Texture* player1HeavyRight;
     Texture* player1HeavyLeft;
+    Texture* player1StunRight;
+    Texture* player1StunLeft;
     Texture* player2IdleRight;
     Texture* player2IdleLeft;
     Texture* player2WalkForwardRight;
@@ -24,6 +26,8 @@ private:
     Texture* player2LightLeft;
     Texture* player2HeavyRight;
     Texture* player2HeavyLeft;
+    Texture* player2StunRight;
+    Texture* player2StunLeft;
     TextureHandler();
 public:
     ~TextureHandler();

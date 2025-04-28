@@ -49,7 +49,8 @@ void GameModel::GameAdvance(int frames) {
 		bool p2hits = IsOverlapping(p2Data.hitBox, p1Data.hurtBox);
 		bool clash = IsOverlapping(p1Data.hitBox, p2Data.hitBox);
 		if (clash) {
-			//TODO: implement clash
+			player1.moveConnect();
+			player2.moveConnect();
 		}
 		else if ((p1hits && !p1Data.moveConnected) && (p2hits && !p2Data.moveConnected)) {
 			player1.Damage(p2Data.damage,p2Data.hitStun);
