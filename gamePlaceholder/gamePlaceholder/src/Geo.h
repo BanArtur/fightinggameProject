@@ -3,12 +3,11 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-struct Rectangle {
-public:
-	glm::vec2 lowerLeft;
-	glm::vec2 upperRight;
+struct BoundingBox {
+	glm::vec2 lowerLeft = glm::vec2(0,0);
+	glm::vec2 upperRight = glm::vec2(0,0);
 };
 
-bool IsOverlapping(Rectangle r1, Rectangle r2);
+bool IsOverlapping(BoundingBox, BoundingBox);
 
-Rectangle FlipRectangle(Rectangle r);
+BoundingBox FlipRectangle(BoundingBox);

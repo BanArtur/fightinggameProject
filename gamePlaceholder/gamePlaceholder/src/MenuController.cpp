@@ -1,7 +1,7 @@
 #include "MenuController.h"
 #include <iostream>
 
-MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p, bool& userlogged, DatabaseHandler* datab) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb), application(app_p), userLoggedIn(userlogged), database(datab) {
+MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p, bool& userlogged, DatabaseHandler* datab, firebase::auth::Auth* au) : shader(sh), renderer(rend), window(wind), state(app), textureMenuBackground("res/textures/background.png"), showHitboxes(hitb), application(app_p), userLoggedIn(userlogged), database(datab), authentication(au) {
     menuProj = glm::ortho(0.0f, 150.0f, 0.0f, 100.0f, -1.0f, 1.0f);
     menuView = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
@@ -18,7 +18,6 @@ MenuController::MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, App
     };
 
     MenuBackground = RenderableObject::MakeObject2D(menuBackgroundPositions, 4 * 4 * sizeof(float), menuBackgroundIndices, 6, shader);
-    authentication = firebase::auth::Auth::GetAuth(application);
     errorMessage = "";
     Init();
 }
@@ -392,8 +391,4 @@ void MenuController::Render() {
     default:
         break;
     }
-}
-
-void MenuController::CleanUp() {
-    delete authentication;
 }

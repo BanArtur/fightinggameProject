@@ -13,8 +13,8 @@
 struct MoveFrame {
 	glm::vec2 velocity;
 
-	Rectangle hitbox;
-	Rectangle hurtbox;
+	BoundingBox hitbox;
+	BoundingBox hurtbox;
 
 	int realFrame = 0;
 };

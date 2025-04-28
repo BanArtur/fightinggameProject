@@ -13,6 +13,11 @@
 #include "RenderableObject.h"
 #include "TextureHandler.h"
 
+#include "DatabaseHandler.h"
+
+#include <firebase/app.h>
+#include <firebase/auth.h>
+
 class GameController {
 private:
 	const float AnimationStripHeight = 128.0f;
@@ -55,8 +60,11 @@ private:
 	Texture textureHurtbox;
 	Texture textureGameBackground;
 
+	DatabaseHandler* database;
+	firebase::auth::Auth* authentication;
+
 public:
-	GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb, bool& userLogged);
+	GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb, bool& userLogged, DatabaseHandler* datab, firebase::auth::Auth* au);
 	~GameController();
 
 	void Init();

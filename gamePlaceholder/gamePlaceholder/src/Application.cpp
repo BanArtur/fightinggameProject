@@ -33,7 +33,6 @@
 #include "imgui/imgui_impl_glfw.h"
 
 #include <firebase/app.h>
-#include <firebase/database.h>
 #include <firebase/auth.h>
 #include <firebase/firestore.h>
 
@@ -49,23 +48,6 @@ int main(void)
         return -1;
 
     /* Create a window and its OpenGL context */
-
-
-    /*
-    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
-    window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }*/
 
     window = glfwCreateWindow(960, 540, "Cave of Combat", NULL, NULL);
 
@@ -93,6 +75,7 @@ int main(void)
         appOptions.set_api_key("AIzaSyD0FUhK3TmHAckxU6qmCBLmTZCQpiTZfRY");
         appOptions.set_project_id("fightinggameproject-d00a1");
         firebase::App* app = firebase::App::Create(appOptions);
+        firebase::auth::Auth* authentication = firebase::auth::Auth::GetAuth(app);
         DatabaseHandler* database = new DatabaseHandler(app);
 
         ApplicationState state = ApplicationState::StartUp;
@@ -119,8 +102,8 @@ int main(void)
 
         bool showHitboxes = false;
         bool userLoggedIn = false;
-        MenuController menuController(shader, renderer, window, state, showHitboxes, app, userLoggedIn, database);
-        GameController gameController(shader, shaderAnimation, renderer, window, state, showHitboxes, userLoggedIn);
+        MenuController menuController(shader, renderer, window, state, showHitboxes, app, userLoggedIn, database, authentication);
+        GameController gameController(shader, shaderAnimation, renderer, window, state, showHitboxes, userLoggedIn, database, authentication);
 
         GameModel gameModel;
 
@@ -161,7 +144,6 @@ int main(void)
                 gameController.Render();
                 break;
             case GameEnd:
-
                 gameController.RenderGameEnd();
                 break;
             default:
@@ -182,8 +164,8 @@ int main(void)
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
 
-        menuController.CleanUp();
         delete database;
+        delete authentication;
         delete app;
     }
 

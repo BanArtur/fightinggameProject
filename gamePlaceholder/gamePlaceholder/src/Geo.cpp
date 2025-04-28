@@ -1,6 +1,6 @@
 #include "Geo.h"
 
-bool IsOverlapping(Rectangle r1, Rectangle r2) {
+bool IsOverlapping(BoundingBox r1, BoundingBox r2) {
 	if (r1.lowerLeft.x == r1.upperRight.x || r1.lowerLeft.y == r1.upperRight.y || r2.lowerLeft.x == r2.upperRight.x || r2.lowerLeft.y == r2.upperRight.y) {
 		return false;
 	}
@@ -12,9 +12,9 @@ bool IsOverlapping(Rectangle r1, Rectangle r2) {
 	}
 	return true;
 }
-Rectangle FlipRectangle(Rectangle r)
+BoundingBox FlipRectangle(BoundingBox r)
 {
-	Rectangle tmp;
+	BoundingBox tmp;
 	tmp.lowerLeft.x = r.upperRight.x * (-1);
 	tmp.upperRight.x = r.lowerLeft.x * (-1);
 	tmp.lowerLeft.y = r.lowerLeft.y;

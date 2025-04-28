@@ -4,7 +4,6 @@
 
 class GameModel {
 private:
-	//TODO: put two player object into one vector
 	Player player1;
 
 	Player player2;
@@ -30,7 +29,7 @@ public:
 	PlayerStateEnum GetPlayerState(int num) const;
 	bool P1Won() const;
 	bool P2Won() const;
-	Rectangle GetPlayerHurtBox(int num) const;
-	Rectangle GetPlayerHitBox(int num) const;
+	BoundingBox GetPlayerHurtBox(int num) const;
+	BoundingBox GetPlayerHitBox(int num) const;
 };
 

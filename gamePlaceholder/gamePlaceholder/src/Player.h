@@ -4,8 +4,8 @@
 
 struct PlayerData {
 	glm::vec2 pos;
-	Rectangle hitBox;
-	Rectangle hurtBox;
+	BoundingBox hitBox;
+	BoundingBox hurtBox;
 	PlayerStateEnum state;
 	int damage;
 	int hitStun;

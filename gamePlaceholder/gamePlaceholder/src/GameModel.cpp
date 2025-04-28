@@ -128,7 +128,7 @@ bool GameModel::P2Won() const {
 	return p2Won;
 }
 
-Rectangle GameModel::GetPlayerHurtBox(int num) const {
+BoundingBox GameModel::GetPlayerHurtBox(int num) const {
 	if (num == 1) {
 		return p1Data.hurtBox;
 	}
@@ -137,7 +137,7 @@ Rectangle GameModel::GetPlayerHurtBox(int num) const {
 	}
 }
 
-Rectangle GameModel::GetPlayerHitBox(int num) const {
+BoundingBox GameModel::GetPlayerHitBox(int num) const {
 	if (num == 1) {
 		return p1Data.hitBox;
 	}

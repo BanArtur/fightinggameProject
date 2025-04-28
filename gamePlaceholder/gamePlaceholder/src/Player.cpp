@@ -22,7 +22,6 @@ void Player::PlayerAction(PlayerStateEnum inputAction) {
 }
 
 PlayerData Player::GameAdvance() {
-	//TODO: return PlayerData
 	if (state.IsNewMove()) {
 		moveConnected = false;
 	}

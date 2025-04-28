@@ -53,12 +53,10 @@ private:
 
 	std::string errorMessage;
 public:
-	MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p, bool& userlogged, DatabaseHandler* datab);
+	MenuController(Shader& sh, Renderer& rend, GLFWwindow* wind, ApplicationState& app, bool& hitb, firebase::App* app_p, bool& userlogged, DatabaseHandler* datab, firebase::auth::Auth* au);
 	~MenuController();
 
 	void Init();
 
 	void Render();
-
-	void CleanUp();
 };

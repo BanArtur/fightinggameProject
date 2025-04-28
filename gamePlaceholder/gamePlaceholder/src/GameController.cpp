@@ -1,7 +1,7 @@
 #include "GameController.h"
 
-GameController::GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb, bool& userLogged) :
-    renderer(rend), shader(sh), shaderAnimation(ansh), state(st), showHitboxes(hitb), window(wind), userLoggedIn(userLogged),
+GameController::GameController(Shader& sh, Shader& ansh, Renderer& rend, GLFWwindow* wind, ApplicationState& st, bool& hitb, bool& userLogged, DatabaseHandler* datab, firebase::auth::Auth* au) :
+    renderer(rend), shader(sh), shaderAnimation(ansh), state(st), showHitboxes(hitb), window(wind), userLoggedIn(userLogged), database(datab), authentication(au),
     textureHitbox("res/textures/hitbox.png"), textureHurtbox("res/textures/hurtbox.png"), textureGameBackground("res/textures/gameBackground.png") {
 
     float gameBackgroundPositions[] = {
@@ -98,10 +98,10 @@ void GameController::Render() {
     glm::mat4 boxModel;
     glm::mat4 boxMVP;
 
-    Rectangle player1hurtBox;
-    Rectangle player1hitBox;
-    Rectangle player2hurtBox;
-    Rectangle player2hitBox;
+    BoundingBox player1hurtBox;
+    BoundingBox player1hitBox;
+    BoundingBox player2hurtBox;
+    BoundingBox player2hitBox;
 
     int framenum = 0;
 
@@ -119,6 +119,13 @@ void GameController::Render() {
 
     if (gameEndFrames > 150) {
         state = ApplicationState::GameEnd;
+        int rankingChange = database->UpdateUserRanking(authentication->current_user().uid(),guestRanking, gameModel.P1Won());
+        if (gameModel.P1Won()) {
+            guestRanking -= rankingChange;
+        }
+        else {
+            guestRanking += rankingChange;
+        }
     }
 
     gameModel.GameAdvance(physicsFrames);
