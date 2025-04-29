@@ -119,12 +119,14 @@ void GameController::Render() {
 
     if (gameEndFrames > 150) {
         state = ApplicationState::GameEnd;
-        int rankingChange = database->UpdateUserRanking(authentication->current_user().uid(),guestRanking, gameModel.P1Won());
-        if (gameModel.P1Won()) {
-            guestRanking -= rankingChange;
-        }
-        else {
-            guestRanking += rankingChange;
+        if (userLoggedIn) {
+            int rankingChange = database->UpdateUserRanking(authentication->current_user().uid(),guestRanking, gameModel.P1Won());
+            if (gameModel.P1Won()) {
+                guestRanking -= rankingChange;
+            }
+            else {
+                guestRanking += rankingChange;
+            }
         }
     }
 
